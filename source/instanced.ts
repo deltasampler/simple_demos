@@ -152,8 +152,8 @@ for (let i = 0; i < y; i++) {
     }
 }
 
-const matrixBuffer = gl.createBuffer();
-gl.bindBuffer(gl.ARRAY_BUFFER, matrixBuffer);
+const matrix_buffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, matrix_buffer);
 gl.bufferData(gl.ARRAY_BUFFER, matrix_data.byteLength, gl.DYNAMIC_DRAW);
 
 for (let i = 0; i < 4; ++i) {
@@ -232,7 +232,7 @@ function render(): void {
     gl.uniformMatrix4fv(u_projection, false, camera.projection);
     gl.uniformMatrix4fv(u_view, false, camera.view);
     gl.bindVertexArray(vao);
-    gl.bindBuffer(gl.ARRAY_BUFFER, matrixBuffer);
+    gl.bindBuffer(gl.ARRAY_BUFFER, matrix_buffer);
     gl.bufferSubData(gl.ARRAY_BUFFER, 0, matrix_data);
     gl.drawElementsInstanced(gl.TRIANGLES, index_count, gl.UNSIGNED_INT, 0, num_instances);
 }
