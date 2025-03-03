@@ -121,6 +121,9 @@ for (const instance of instances) {
     instance[8] = 1.0;
 }
 
+const vao = gl.createVertexArray();
+gl.bindVertexArray(vao);
+
 const vbo = gl.createBuffer();
 gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
 gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(instance_data), gl.STATIC_DRAW);
@@ -179,9 +182,9 @@ function render(): void {
     gl.useProgram(program);
     gl.uniformMatrix4fv(u_projection, false, camera.projection);
     gl.uniformMatrix4fv(u_view, false, camera.view);
+    gl.bindVertexArray(vao);
     gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
     gl.bufferSubData(gl.ARRAY_BUFFER, 0, instance_data);
-
     gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, instance_count);
 }
 
