@@ -1,7 +1,7 @@
-import { vec2_t, vec3_t } from "@cl/type";
+import {vec2_t, vec3_t} from "@cl/type.ts";
 import {cl_vec2, cl_vec2_add2, cl_vec2_copy, cl_vec2_dist, cl_vec2_len, cl_vec2_mul_s, cl_vec2_set, cl_vec2_sub, cl_vec2_unit} from "@cl/vec2.ts";
 import {cl_vec3} from "@cl/vec3.ts";
-import {d2_circle, d2_clear_color_rgb, d2_init, d2_line, d2_rect, d2_stroke} from "@engine/d2.ts";
+import {d2_aabb2, d2_center_transform, d2_circle2, d2_clear_color, d2_fill_vec, d2_init, d2_line2, d2_line_radius2, d2_reset_transform, d2_stroke_vec} from "@engine/d2.ts";
 import {io_init, io_m_button_down, io_m_button_up, io_m_move, m_event_t} from "@engine/io.ts";
 import {cl_abs, cl_clamp, cl_hypot} from "@cl/math.ts";
 
@@ -75,8 +75,8 @@ class circle_t implements collider_t {
     }
 
     render(color: vec3_t): void {
-        d2_circle(this.position, this.diameter);
-        d2_stroke(color, 1.0);
+        d2_stroke_vec(color, 1.0);
+        d2_circle2(this.position, this.diameter / 2.0);
     }
 };
 
@@ -134,8 +134,8 @@ class aabb_t implements collider_t {
     }
 
     render(color: vec3_t): void {
-        d2_rect(this.position, this.size);
-        d2_stroke(color, 1.0);
+        d2_stroke_vec(color, 1.0);
+        d2_aabb2(this.position, this.size);
     }
 };
 
@@ -175,12 +175,8 @@ class line_t implements collider_t {
     }
     
     render(color: vec3_t): void {
-        d2_line(this.start, this.end);
-        d2_stroke(color, 1.0);
-        d2_circle(this.start, this.diameter);
-        d2_stroke(color, 1.0);
-        d2_circle(this.end, this.diameter);
-        d2_stroke(color, 1.0);
+        d2_fill_vec(color);
+        d2_line_radius2(this.start, this.end, this.diameter / 2.0);
     }
 };
 
@@ -257,10 +253,9 @@ io_m_button_up(function(event: m_event_t): void {
 });
 
 function render(): void {
-    d2.resetTransform();
-    d2_clear_color_rgb(0.0, 0.0, 0.0);
-    d2.translate(canvas_el.width / 2.0, canvas_el.height / 2.0);
-    d2.scale(1.0, -1.0);
+    d2_reset_transform();
+    d2_clear_color(0.0, 0.0, 0.0);
+    d2_center_transform();
 
     for (const collider of colliders) {
         let color;
@@ -276,8 +271,8 @@ function render(): void {
         collider.render(color);
 
         if (cl_vec2_dist(closest_point, mouse) < 200.0) {
-            d2_line(mouse, closest_point);
-            d2_stroke(cl_vec3(255.0, 0.0, 255.0), 1.0);
+            d2_stroke_vec(cl_vec3(255.0, 0.0, 255.0), 1.0);
+            d2_line2(mouse, closest_point);
         }
     }
 }
