@@ -1,5 +1,5 @@
 import {gl_init, gl_link_program} from "@engine/gl.ts";
-import {cl_cam2_compute_proj, cl_cam2_compute_view, cl_cam2_move_right, cl_cam2_move_up, cl_cam2_new} from "@cl/cam2.ts";
+import {cam2_compute_proj, cam2_compute_view, cam2_move_right, cam2_move_up, cam2_new} from "@cl/cam2.ts";
 import {io_init, io_key_down} from "@engine/io.ts";
 import { TYPE } from "@cl/type";
 import {en_create_canvas} from "@engine/canvas.ts";
@@ -132,7 +132,7 @@ gl.enableVertexAttribArray(3);
 gl.vertexAttribPointer(3, 4, gl.FLOAT, false, 36, 20);
 gl.vertexAttribDivisor(3, 1);
 
-const camera = cl_cam2_new();
+const camera = cam2_new();
 
 io_init();
 
@@ -144,23 +144,23 @@ setInterval(function() {
 
 function update() {
     if (io_key_down("KeyA")) {
-        cl_cam2_move_right(camera, -1.0);
+        cam2_move_right(camera, -1.0);
     }
 
     if (io_key_down("KeyD")) {
-        cl_cam2_move_right(camera, 1.0);
+        cam2_move_right(camera, 1.0);
     }
 
     if (io_key_down("KeyS")) {
-        cl_cam2_move_up(camera, -1.0);
+        cam2_move_up(camera, -1.0);
     }
 
     if (io_key_down("KeyW")) {
-        cl_cam2_move_up(camera, 1.0);
+        cam2_move_up(camera, 1.0);
     }
 
-    cl_cam2_compute_proj(camera, canvas_el.width, canvas_el.height);
-    cl_cam2_compute_view(camera);
+    cam2_compute_proj(camera, canvas_el.width, canvas_el.height);
+    cam2_compute_view(camera);
 }
 
 function render(): void {
@@ -176,11 +176,11 @@ function render(): void {
     gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, instance_count);
 }
 
-function loop(): void {
+function main_loop(): void {
     update();
     render();
 
-    requestAnimationFrame(loop);
+    requestAnimationFrame(main_loop);
 }
 
-loop();
+main_loop();

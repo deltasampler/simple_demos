@@ -1,6 +1,6 @@
-import {cl_cam3_compute_proj, cl_cam3_compute_view, cl_cam3_move_forward, cl_cam3_move_right, cl_cam3_new, cl_cam3_pan, cl_cam3_tilt, cl_cam3_update} from "@cl/cam3";
-import {cl_mat4} from "@cl/mat4";
-import {cl_vec3} from "@cl/vec3";
+import {cam3_compute_proj, cam3_compute_view, cam3_move_forward, cam3_move_right, cam3_new, cam3_pan, cam3_tilt, cam3_update} from "@cl/cam3";
+import {mat4} from "@cl/mat4";
+import {vec3} from "@cl/vec3";
 import {gl_init, gl_link_program} from "@engine/gl.ts";
 import {io_init, io_kb_key_down, io_key_down, io_m_move, kb_event_t, m_event_t} from "@engine/io.ts";
 import {en_create_canvas} from "@engine/canvas.ts";
@@ -111,9 +111,9 @@ const ibo = gl.createBuffer();
 gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
 gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(indices), gl.STATIC_DRAW);
 
-const model = cl_mat4(1.0);
-const camera = cl_cam3_new();
-camera.position = cl_vec3(5.0, 5.0, 5.0);
+const model = mat4(1.0);
+const camera = cam3_new();
+camera.position = vec3(5.0, 5.0, 5.0);
 camera.yaw = -45;
 camera.pitch = -45;
 
@@ -121,8 +121,8 @@ io_init();
 
 io_m_move(function(event: m_event_t): void {
     if (document.pointerLockElement === canvas_el) {
-        cl_cam3_pan(camera, event.xd, 1.0);
-        cl_cam3_tilt(camera, event.yd, 1.0);
+        cam3_pan(camera, event.xd, 1.0);
+        cam3_tilt(camera, event.yd, 1.0);
     }
 });
 
@@ -139,25 +139,25 @@ io_kb_key_down(function(event: kb_event_t): void {
 function update(): void {
     if (document.pointerLockElement === canvas_el) {
         if (io_key_down("KeyA")) {
-            cl_cam3_move_right(camera, -1.0, 1.0);
+            cam3_move_right(camera, -1.0, 1.0);
         }
 
         if (io_key_down("KeyD")) {
-            cl_cam3_move_right(camera, 1.0, 1.0);
+            cam3_move_right(camera, 1.0, 1.0);
         }
 
         if (io_key_down("KeyS")) {
-            cl_cam3_move_forward(camera, -1.0, 1.0);
+            cam3_move_forward(camera, -1.0, 1.0);
         }
 
         if (io_key_down("KeyW")) {
-            cl_cam3_move_forward(camera, 1.0, 1.0);
+            cam3_move_forward(camera, 1.0, 1.0);
         }
     }
 
-    cl_cam3_update(camera);
-    cl_cam3_compute_proj(camera, canvas_el.width, canvas_el.height);
-    cl_cam3_compute_view(camera);
+    cam3_update(camera);
+    cam3_compute_proj(camera, canvas_el.width, canvas_el.height);
+    cam3_compute_view(camera);
 }
 
 gl.enable(gl.DEPTH_TEST);
@@ -177,11 +177,11 @@ function render(): void {
     gl.drawElements(gl.TRIANGLES, index_count, gl.UNSIGNED_INT, 0);
 }
 
-function loop(): void {
+function main_loop(): void {
     update();
     render();
 
-    requestAnimationFrame(loop);
+    requestAnimationFrame(main_loop);
 }
 
-loop();
+main_loop();

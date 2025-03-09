@@ -1,7 +1,7 @@
 import {gl_init, gl_link_program} from "@engine/gl.ts";
-import {cl_cam2_compute_proj, cl_cam2_compute_view, cl_cam2_move_right, cl_cam2_move_up, cl_cam2_new} from "@cl/cam2.ts";
+import {cam2_compute_proj, cam2_compute_view, cam2_move_right, cam2_move_up, cam2_new} from "@cl/cam2.ts";
 import {TYPE, vec2_t} from "@cl/type";
-import {cl_vec2_set} from "@cl/vec2";
+import {vec2_set} from "@cl/vec2";
 import {io_init, io_key_down} from "@engine/io.ts";
 import {en_create_canvas} from "@engine/canvas.ts";
 
@@ -56,7 +56,7 @@ for (let i = 0; i < num_instances; ++i) {
 }
 
 for (const pos of positions) {
-    cl_vec2_set(pos, random(-20.0, 20.0), random(-20.0, 20.0));
+    vec2_set(pos, random(-20.0, 20.0), random(-20.0, 20.0));
 }
 
 const position_buffer = gl.createBuffer();
@@ -67,29 +67,29 @@ gl.enableVertexAttribArray(0);
 gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
 gl.vertexAttribDivisor(0, 1);
 
-const camera = cl_cam2_new();
+const camera = cam2_new();
 
 io_init();
 
 function update() {
     if (io_key_down("KeyA")) {
-        cl_cam2_move_right(camera, -1.0);
+        cam2_move_right(camera, -1.0);
     }
 
     if (io_key_down("KeyD")) {
-        cl_cam2_move_right(camera, 1.0);
+        cam2_move_right(camera, 1.0);
     }
 
     if (io_key_down("KeyS")) {
-        cl_cam2_move_up(camera, -1.0);
+        cam2_move_up(camera, -1.0);
     }
 
     if (io_key_down("KeyW")) {
-        cl_cam2_move_up(camera, 1.0);
+        cam2_move_up(camera, 1.0);
     }
 
-    cl_cam2_compute_proj(camera, canvas_el.width, canvas_el.height);
-    cl_cam2_compute_view(camera);
+    cam2_compute_proj(camera, canvas_el.width, canvas_el.height);
+    cam2_compute_view(camera);
 }
 
 function render(): void {
@@ -103,11 +103,11 @@ function render(): void {
     gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, num_instances);
 }
 
-function loop(): void {
+function main_loop(): void {
     update();
     render();
 
-    requestAnimationFrame(loop);
+    requestAnimationFrame(main_loop);
 }
 
-loop();
+main_loop();

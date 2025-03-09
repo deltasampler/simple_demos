@@ -1,11 +1,11 @@
 import {vec2_t} from "@cl/type.ts";
-import {cl_vec2, cl_vec2_set} from "@cl/vec2.ts";
+import {vec2, vec2_set} from "@cl/vec2.ts";
 import {d2_aabb, d2_center_transform, d2_circle, d2_circle_angle, d2_clear_color, d2_fill, d2_init, d2_line, d2_line_arrow, d2_line_radius, d2_obb, d2_obb_angle, d2_point, d2_point_radius, d2_polygon, d2_polygon_cent, d2_polygon_cent_angle, d2_reset_transform, d2_stroke} from "@engine/d2.ts";
 import {io_init, io_m_move, m_event_t} from "@engine/io.ts";
 import {en_create_canvas} from "@engine/canvas.ts";
 
 const canvas_el = en_create_canvas(document.body);
-const mouse = cl_vec2();
+const mouse = vec2();
 
 io_init();
 
@@ -14,7 +14,7 @@ io_m_move(function(event: m_event_t): void {
         return;
     }
 
-    cl_vec2_set(mouse, event.x - canvas_el.width / 2.0, -event.y + canvas_el.height / 2.0);
+    vec2_set(mouse, event.x - canvas_el.width / 2.0, -event.y + canvas_el.height / 2.0);
 });
 
 d2_init(canvas_el);
@@ -48,9 +48,9 @@ function center_points(points: vec2_t[]) {
     return [cx, cy];
 }
 
-const triangle: vec2_t[] = [cl_vec2(-100.0, -86.6), cl_vec2(100.0, -86.6), cl_vec2(0.0, 86.6)];
+const triangle: vec2_t[] = [vec2(-100.0, -86.6), vec2(100.0, -86.6), vec2(0.0, 86.6)];
 center_points(triangle);
-const quad = [cl_vec2(-400.0, -100.0), cl_vec2(-350.0, -200.0), cl_vec2(-100.0, -250.0), cl_vec2(-100.0, -200.0)];
+const quad = [vec2(-400.0, -100.0), vec2(-350.0, -200.0), vec2(-100.0, -250.0), vec2(-100.0, -200.0)];
 
 function render() {
     d2_reset_transform();
@@ -100,10 +100,10 @@ function render() {
     d2_line_arrow(-500.0, -100.0, -400.0, 400.0, 4.0);
 }
 
-function loop() {
+function main_loop() {
     render();
 
-    requestAnimationFrame(loop);
+    requestAnimationFrame(main_loop);
 }
 
-loop();
+main_loop();

@@ -35,10 +35,10 @@ function render(): void {
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 }
 
-function loop(): void {
+function main_loop(): void {
     render();
 
-    requestAnimationFrame(loop);
+    requestAnimationFrame(main_loop);
 }
 
-loop();
+main_loop();

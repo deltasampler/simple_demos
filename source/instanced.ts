@@ -1,9 +1,9 @@
-import {cl_cam3_compute_proj, cl_cam3_compute_view, cl_cam3_move_forward, cl_cam3_move_right, cl_cam3_new, cl_cam3_pan, cl_cam3_tilt, cl_cam3_update} from "@cl/cam3";
-import {cl_mat4_ident} from "@cl/mat4";
-import {cl_vec3} from "@cl/vec3";
+import {cam3_compute_proj, cam3_compute_view, cam3_move_forward, cam3_move_right, cam3_new, cam3_pan, cam3_tilt, cam3_update} from "@cl/cam3";
+import {mat4_ident} from "@cl/mat4";
+import {vec3} from "@cl/vec3";
 import {gl_init, gl_link_program} from "@engine/gl.ts";
 import {io_init, io_kb_key_down, io_key_down, io_m_move, kb_event_t, m_event_t} from "@engine/io.ts";
-import {cl_mat4_rotate_x, cl_mat4_rotate_y, cl_mat4_rotate_z, cl_mat4_translate} from "@cl/mat4_affine.ts";
+import {mat4_rotate_x, mat4_rotate_y, mat4_rotate_z, mat4_translate} from "@cl/mat4_affine.ts";
 import { mat4_t, TYPE } from "@cl/type";
 import {en_create_canvas} from "@engine/canvas.ts";
 
@@ -134,8 +134,8 @@ let k = 0;
 for (let i = 0; i < y; i++) {
     for (let j = 0; j < x; j++) {
         const mat = matrices[k];
-        cl_mat4_ident(mat);
-        cl_mat4_translate(mat, cl_vec3(i * 6.0, 0.0, j * 6.0));
+        mat4_ident(mat);
+        mat4_translate(mat, vec3(i * 6.0, 0.0, j * 6.0));
         k++;
     }
 }
@@ -151,8 +151,8 @@ for (let i = 0; i < 4; ++i) {
     gl.vertexAttribDivisor(loc, 1);
 }
 
-const camera = cl_cam3_new();
-camera.position = cl_vec3(10.0, 10.0, 10.0);
+const camera = cam3_new();
+camera.position = vec3(10.0, 10.0, 10.0);
 camera.yaw = 135.0;
 camera.pitch = -15.0;
 
@@ -160,8 +160,8 @@ io_init();
 
 io_m_move(function(event: m_event_t): void {
     if (document.pointerLockElement === canvas_el) {
-        cl_cam3_pan(camera, event.xd);
-        cl_cam3_tilt(camera, event.yd);
+        cam3_pan(camera, event.xd);
+        cam3_tilt(camera, event.yd);
     }
 });
 
@@ -178,32 +178,32 @@ io_kb_key_down(function(event: kb_event_t): void {
 function update(): void {
     if (document.pointerLockElement === canvas_el) {
         if (io_key_down("KeyA")) {
-            cl_cam3_move_right(camera, -1.0);
+            cam3_move_right(camera, -1.0);
         }
 
         if (io_key_down("KeyD")) {
-            cl_cam3_move_right(camera, 1.0);
+            cam3_move_right(camera, 1.0);
         }
 
         if (io_key_down("KeyS")) {
-            cl_cam3_move_forward(camera, -1.0);
+            cam3_move_forward(camera, -1.0);
         }
 
         if (io_key_down("KeyW")) {
-            cl_cam3_move_forward(camera, 1.0);
+            cam3_move_forward(camera, 1.0);
         }
     }
 
-    cl_cam3_update(camera);
-    cl_cam3_compute_proj(camera, canvas_el.width, canvas_el.height);
-    cl_cam3_compute_view(camera);
+    cam3_update(camera);
+    cam3_compute_proj(camera, canvas_el.width, canvas_el.height);
+    cam3_compute_view(camera);
 }
 
 setInterval(() => {
     for (const matrix of matrices) {
-        cl_mat4_rotate_x(matrix, Math.random() / 50.0);
-        cl_mat4_rotate_y(matrix, Math.random() / 50.0);
-        cl_mat4_rotate_z(matrix, Math.random() / 50.0);
+        mat4_rotate_x(matrix, Math.random() / 50.0);
+        mat4_rotate_y(matrix, Math.random() / 50.0);
+        mat4_rotate_z(matrix, Math.random() / 50.0);
     }
 }, 1000 / 30.0);
 
@@ -225,11 +225,11 @@ function render(): void {
     gl.drawElementsInstanced(gl.TRIANGLES, index_count, gl.UNSIGNED_INT, 0, num_instances);
 }
 
-function loop(): void {
+function main_loop(): void {
     update();
     render();
 
-    requestAnimationFrame(loop);
+    requestAnimationFrame(main_loop);
 }
 
-loop();
+main_loop();

@@ -77,10 +77,10 @@ function render(): void {
     gl.drawElements(gl.TRIANGLES, index_count, gl.UNSIGNED_INT, 0);
 }
 
-function loop(): void {
+function main_loop(): void {
     render();
 
-    requestAnimationFrame(loop);
+    requestAnimationFrame(main_loop);
 }
 
-loop();
+main_loop();
