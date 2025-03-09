@@ -3,21 +3,9 @@ import {cl_mat4} from "@cl/mat4";
 import {cl_vec3} from "@cl/vec3";
 import {gl_init, gl_link_program} from "@engine/gl.ts";
 import {io_init, io_kb_key_down, io_key_down, io_m_move, kb_event_t, m_event_t} from "@engine/io.ts";
+import {en_create_canvas} from "@engine/canvas.ts";
 
-document.body.style.margin = "0";
-document.body.style.height = "100vh";
-document.body.style.overflow = "hidden";
-
-const canvas_el = document.createElement("canvas");
-canvas_el.width = document.body.clientWidth;
-canvas_el.height = document.body.clientHeight;
-document.body.append(canvas_el);
-
-addEventListener("resize", function(): void {
-    canvas_el.width = document.body.clientWidth;
-    canvas_el.height = document.body.clientHeight;
-});
-
+const canvas_el = en_create_canvas(document.body);
 const gl = gl_init(canvas_el);
 
 const program = gl_link_program({

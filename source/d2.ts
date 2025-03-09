@@ -2,21 +2,9 @@ import {vec2_t} from "@cl/type.ts";
 import {cl_vec2, cl_vec2_set} from "@cl/vec2.ts";
 import {d2_aabb, d2_center_transform, d2_circle, d2_circle_angle, d2_clear_color, d2_fill, d2_init, d2_line, d2_line_arrow, d2_line_radius, d2_obb, d2_obb_angle, d2_point, d2_point_radius, d2_polygon, d2_polygon_cent, d2_polygon_cent_angle, d2_reset_transform, d2_stroke} from "@engine/d2.ts";
 import {io_init, io_m_move, m_event_t} from "@engine/io.ts";
+import {en_create_canvas} from "@engine/canvas.ts";
 
-document.body.style.height = "100vh";
-document.body.style.margin = "0px";
-document.body.style.overflow = "hidden";
-
-const canvas_el = document.createElement("canvas");
-document.body.append(canvas_el);
-canvas_el.width = canvas_el.parentElement!.clientWidth;
-canvas_el.height = canvas_el.parentElement!.clientHeight;
-
-addEventListener("resize", function(): void {
-    canvas_el.width = canvas_el.parentElement!.clientWidth;
-    canvas_el.height = canvas_el.parentElement!.clientHeight;
-});
-
+const canvas_el = en_create_canvas(document.body);
 const mouse = cl_vec2();
 
 io_init();

@@ -3,25 +3,13 @@ import {cl_cam2_compute_proj, cl_cam2_compute_view, cl_cam2_move_right, cl_cam2_
 import {TYPE, vec2_t} from "@cl/type";
 import {cl_vec2_set} from "@cl/vec2";
 import {io_init, io_key_down} from "@engine/io.ts";
+import {en_create_canvas} from "@engine/canvas.ts";
 
 function random(min: number, max: number): number {
     return Math.random() * (max - min + 1.0) + min;
 }
 
-document.body.style.margin = "0";
-document.body.style.height = "100vh";
-document.body.style.overflow = "hidden";
-
-const canvas_el = document.createElement("canvas");
-canvas_el.width = document.body.clientWidth;
-canvas_el.height = document.body.clientHeight;
-document.body.append(canvas_el);
-
-addEventListener("resize", function(): void {
-    canvas_el.width = document.body.clientWidth;
-    canvas_el.height = document.body.clientHeight;
-});
-
+const canvas_el = en_create_canvas(document.body);
 const gl = gl_init(canvas_el);
 
 const program = gl_link_program({
