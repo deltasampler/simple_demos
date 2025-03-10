@@ -1,5 +1,5 @@
 import {vec2_t, vec3_t} from "@cl/type.ts";
-import {vec2, vec2_add, vec2_copy, vec2_dist, vec2_mul_s, vec2_set, vec2_sub} from "@cl/vec2.ts";
+import {vec2, vec2_add1, vec2_copy, vec2_dist, vec2_muls1, vec2_set, vec2_sub1} from "@cl/vec2.ts";
 import {d2_aabb2, d2_center_transform, d2_circle2, d2_clear_color, d2_fill, d2_fill_vec, d2_init, d2_line2, d2_line_arrow2, d2_line_radius2, d2_obb2, d2_polygon_cent2, d2_reset_transform, d2_stroke_vec} from "@engine/d2.ts";
 import {io_init, io_kb_key_down, io_m_button_down, io_m_button_up, io_m_move, kb_event_t, m_event_t} from "@engine/io.ts";
 import {line_intersect_aabb, line_intersect_capsule, line_intersect_circle, line_intersect_convex_cent, line_intersect_line, line_intersect_obb, point_closest_aabb, point_closest_capsule, point_closest_circle, point_closest_convex_cent, point_closest_line, point_closest_obb, point_inside_aabb, point_inside_capsule, point_inside_circle, point_inside_convex_cent, point_inside_obb, sat} from "@cl/collision2";
@@ -328,8 +328,8 @@ io_m_move(function(event: m_event_t): void {
                 vec2_copy(selected.end, mouse);
             }
         } else {
-            const offset = vec2_sub(mouse, start_position);
-            selected.translate(vec2_add(selected_pos, offset));
+            const offset = vec2_sub1(mouse, start_position);
+            selected.translate(vec2_add1(selected_pos, offset));
         }
     }
 });
@@ -421,7 +421,7 @@ function render(): void {
                 collider.render(vec3(255, 209, 209));
 
                 d2_fill(255.0, 0.0, 0.0);
-                d2_line_arrow2(vec2(), vec2_mul_s(result.mtv, 40.0), 4.0);
+                d2_line_arrow2(vec2(), vec2_muls1(result.mtv, 40.0), 4.0);
             } else {
                 collider.render(vec3(209, 209, 209));
             }
