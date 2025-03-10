@@ -1,7 +1,7 @@
 import {gl_init, gl_link_program} from "@engine/gl.ts";
-import {en_create_canvas} from "@engine/canvas.ts";
+import {create_canvas} from "@engine/canvas.ts";
 
-const canvas_el = en_create_canvas(document.body);
+const canvas_el = create_canvas(document.body);
 const gl = gl_init(canvas_el);
 
 const program = gl_link_program({
@@ -35,10 +35,10 @@ function render(): void {
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 }
 
-function main_loop(): void {
+function loop(): void {
     render();
 
-    requestAnimationFrame(main_loop);
+    requestAnimationFrame(loop);
 }
 
-main_loop();
+loop();

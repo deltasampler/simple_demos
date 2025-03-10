@@ -1,12 +1,12 @@
 import {vec2_t, vec3_t} from "@cl/type.ts";
-import {vec2, vec2_add, vec2_add_mul_s2, vec2_copy, vec2_dir, vec2_dist, vec2_set, vec2_sub} from "@cl/vec2.ts";
+import {vec2, vec2_add, vec2_copy, vec2_dist, vec2_mul_s, vec2_set, vec2_sub} from "@cl/vec2.ts";
 import {d2_aabb2, d2_center_transform, d2_circle2, d2_clear_color, d2_fill, d2_fill_vec, d2_init, d2_line2, d2_line_arrow2, d2_line_radius2, d2_obb2, d2_polygon_cent2, d2_reset_transform, d2_stroke_vec} from "@engine/d2.ts";
 import {io_init, io_kb_key_down, io_m_button_down, io_m_button_up, io_m_move, kb_event_t, m_event_t} from "@engine/io.ts";
-import {line_intersect_aabb, line_intersect_capsule, line_intersect_circle, line_intersect_convex_cent, line_intersect_line, line_intersect_obb, point_closest_aabb, point_closest_capsule, point_closest_circle, point_closest_convex_cent, point_closest_line, point_closest_obb, point_inside_aabb, point_inside_capsule, point_inside_circle, point_inside_convex_cent, point_inside_obb, sat} from "@cl/phys2.ts";
+import {line_intersect_aabb, line_intersect_capsule, line_intersect_circle, line_intersect_convex_cent, line_intersect_line, line_intersect_obb, point_closest_aabb, point_closest_capsule, point_closest_circle, point_closest_convex_cent, point_closest_line, point_closest_obb, point_inside_aabb, point_inside_capsule, point_inside_circle, point_inside_convex_cent, point_inside_obb, sat} from "@cl/collision2";
 import {vec3} from "@cl/vec3.ts";
-import {en_create_canvas} from "@engine/canvas.ts";
+import {create_canvas} from "@engine/canvas.ts";
 
-const canvas_el = en_create_canvas(document.body);
+const canvas_el = create_canvas(document.body);
 d2_init(canvas_el);
 
 const mouse = vec2();
@@ -33,7 +33,7 @@ class circle_t implements collider_t {
     }
 
     render(color: vec3_t): void {
-        d2_fill_vec(color);
+        d2_stroke_vec(color, 2.0);
         d2_circle2(this.position, this.radius);
     }
 
@@ -72,7 +72,7 @@ class aabb_t implements collider_t {
     }
 
     render(color: vec3_t): void {
-        d2_fill_vec(color);
+        d2_stroke_vec(color, 2.0);
         d2_aabb2(this.position, this.size);
     }
 
@@ -113,7 +113,7 @@ class obb_t implements collider_t {
     }
 
     render(color: vec3_t): void {
-        d2_fill_vec(color);
+        d2_stroke_vec(color, 2.0);
         d2_obb2(this.position, this.size, this.angle);
     }
 
@@ -265,7 +265,7 @@ class polygon_t implements collider_t {
     }
 
     render(color: vec3_t): void {
-        d2_fill_vec(color);
+        d2_stroke_vec(color, 2.0);
         d2_polygon_cent2(this.points, this.position, this.angle);
     }
 
@@ -307,9 +307,6 @@ colliders.push(new line_t(vec2(-400.0, 100.0), vec2(-200.0, 300.0)));
 
 const line = new line_t(start, end);
 colliders.push(line);
-
-const circle = new circle_t(vec2(0.0), 50.0)
-colliders.push(circle);
 
 let selected: collider_t|null = null;
 let start_position = vec2();
@@ -390,38 +387,15 @@ io_m_button_up(function(event: m_event_t): void {
     selected = null;
 });
 
-function resolve() {
-    for (const collider of colliders) {
-        if (collider !== circle) {
-            const cp = collider.closest_point(circle.position);
-            const dir = vec2_dir(circle.position, cp);
-            const distance_to_cp = vec2_dist(circle.position, cp);
-
-            if (collider.point_inside(circle.position)) {
-                vec2_add_mul_s2(circle.position, dir, -(circle.radius + distance_to_cp));
-            } else {
-                const depth = circle.radius - distance_to_cp;
-
-                if (depth > 0.0) {
-                    vec2_add_mul_s2(circle.position, dir, depth);
-                }
-            }
-        }
-    }
-}
 
 io_kb_key_down(function(event: kb_event_t): void {
-    if (event.code === "KeyR") {
-        resolve();
-    }
+
 });
 
 function update(): void {
     for (const collider of colliders) {
         collider.rotate(0.001);
     }
-
-    resolve();
 }
 
 function render(): void {
@@ -431,12 +405,6 @@ function render(): void {
 
     for (const collider of colliders) {
         if (collider === line) {
-            collider.render(vec3(89, 111, 255));
-            continue;
-        }
-
-        if (collider === circle) {
-            collider.render(vec3(89, 111, 255));
             continue;
         }
 
@@ -453,14 +421,14 @@ function render(): void {
                 collider.render(vec3(255, 209, 209));
 
                 d2_fill(255.0, 0.0, 0.0);
-                d2_line_arrow2(vec2(), result.mtv!, 4.0);
+                d2_line_arrow2(vec2(), vec2_mul_s(result.mtv, 40.0), 4.0);
             } else {
                 collider.render(vec3(209, 209, 209));
             }
-        } else {
-            collider.render(vec3(209, 209, 209));
-        }
+        } 
     }
+
+    line.render(vec3(89, 111, 255))
 
     for (const collider of colliders) {
         const cp = collider.closest_point(mouse);
@@ -473,22 +441,20 @@ function render(): void {
             d2_circle2(cp, 4.0);
         }
 
-        if (collider !== line) {
-            const points = collider.intersect_line(line.start, line.end);
+        const points = collider.intersect_line(line.start, line.end);
 
-            for (const point of points) {
-                d2_fill_vec(vec3(255, 120, 120));
-                d2_circle2(point, 4.0);
-            }
+        for (const point of points) {
+            d2_fill_vec(vec3(255, 120, 120));
+            d2_circle2(point, 4.0);
         }
     }
 }
 
-function main_loop(): void {
+function loop(): void {
     update();
     render();
 
-    requestAnimationFrame(main_loop);
+    requestAnimationFrame(loop);
 }
 
-main_loop();
+loop();

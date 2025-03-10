@@ -3,13 +3,13 @@ import {cam2_compute_proj, cam2_compute_view, cam2_move_right, cam2_move_up, cam
 import {TYPE, vec2_t} from "@cl/type";
 import {vec2_set} from "@cl/vec2";
 import {io_init, io_key_down} from "@engine/io.ts";
-import {en_create_canvas} from "@engine/canvas.ts";
+import {create_canvas} from "@engine/canvas.ts";
 
 function random(min: number, max: number): number {
     return Math.random() * (max - min + 1.0) + min;
 }
 
-const canvas_el = en_create_canvas(document.body);
+const canvas_el = create_canvas(document.body);
 const gl = gl_init(canvas_el);
 
 const program = gl_link_program({
@@ -103,11 +103,11 @@ function render(): void {
     gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, num_instances);
 }
 
-function main_loop(): void {
+function loop(): void {
     update();
     render();
 
-    requestAnimationFrame(main_loop);
+    requestAnimationFrame(loop);
 }
 
-main_loop();
+loop();

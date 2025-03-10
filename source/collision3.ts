@@ -1,10 +1,11 @@
 import {d2_center_transform, d2_circle2, d2_clear_color, d2_init, d2_obb_minmax2, d2_polygon_cent2, d2_reset_transform, d2_stroke} from "@engine/d2.ts";
-import {body_box, body_circle, body_polygon, body_t, BODY_TYPE, broad_phase_naive, narrow_phase, point_inside_obb} from "@cl/phys2.ts";
+import {body_box, body_circle, body_polygon, body_t, BODY_TYPE, broad_phase_naive, narrow_phase} from "@cl/phys2.ts";
 import {vec2, vec2_abs, vec2_add, vec2_copy, vec2_set, vec2_sub} from "@cl/vec2.ts";
 import {io_init, io_kb_key_down, io_key_down, io_m_button_down, io_m_button_up, io_m_move, kb_event_t, m_event_t} from "@engine/io.ts";
-import {en_create_canvas} from "@engine/canvas.ts";
+import {create_canvas} from "@engine/canvas.ts";
+import { point_inside_obb } from "@cl/collision2";
 
-const canvas_el = en_create_canvas(document.body);
+const canvas_el = create_canvas(document.body);
 d2_init(canvas_el);
 
 const bodies: body_t[] = [];
@@ -115,11 +116,11 @@ function render(): void {
     }
 }
 
-function main_loop(): void {
+function loop(): void {
     update();
     render();
 
-    requestAnimationFrame(main_loop);
+    requestAnimationFrame(loop);
 }
 
-main_loop();
+loop();

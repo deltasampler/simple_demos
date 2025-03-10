@@ -2,9 +2,9 @@ import {vec2_t} from "@cl/type.ts";
 import {vec2, vec2_set} from "@cl/vec2.ts";
 import {d2_aabb, d2_center_transform, d2_circle, d2_circle_angle, d2_clear_color, d2_fill, d2_init, d2_line, d2_line_arrow, d2_line_radius, d2_obb, d2_obb_angle, d2_point, d2_point_radius, d2_polygon, d2_polygon_cent, d2_polygon_cent_angle, d2_reset_transform, d2_stroke} from "@engine/d2.ts";
 import {io_init, io_m_move, m_event_t} from "@engine/io.ts";
-import {en_create_canvas} from "@engine/canvas.ts";
+import {create_canvas} from "@engine/canvas.ts";
 
-const canvas_el = en_create_canvas(document.body);
+const canvas_el = create_canvas(document.body);
 const mouse = vec2();
 
 io_init();
@@ -100,10 +100,10 @@ function render() {
     d2_line_arrow(-500.0, -100.0, -400.0, 400.0, 4.0);
 }
 
-function main_loop() {
+function loop() {
     render();
 
-    requestAnimationFrame(main_loop);
+    requestAnimationFrame(loop);
 }
 
-main_loop();
+loop();
