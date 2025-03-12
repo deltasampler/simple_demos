@@ -1,8 +1,8 @@
 import {vec2_t, vec3_t} from "@cl/type.ts";
-import {vec2, vec2_add1, vec2_copy, vec2_dist, vec2_muls1, vec2_set, vec2_sub1} from "@cl/vec2.ts";
+import {vec2, vec2_add1, vec2_addmuls1, vec2_copy, vec2_dist, vec2_muls1, vec2_set, vec2_sub1} from "@cl/vec2.ts";
 import {d2_aabb2, d2_center_transform, d2_circle2, d2_clear_color, d2_fill, d2_fill_vec, d2_init, d2_line2, d2_line_arrow2, d2_line_radius2, d2_obb2, d2_polygon_cent2, d2_reset_transform, d2_stroke_vec} from "@engine/d2.ts";
 import {io_init, io_kb_key_down, io_m_button_down, io_m_button_up, io_m_move, kb_event_t, m_event_t} from "@engine/io.ts";
-import {line_intersect_aabb, line_intersect_capsule, line_intersect_circle, line_intersect_convex_cent, line_intersect_line, line_intersect_obb, point_closest_aabb, point_closest_capsule, point_closest_circle, point_closest_convex_cent, point_closest_line, point_closest_obb, point_inside_aabb, point_inside_capsule, point_inside_circle, point_inside_convex_cent, point_inside_obb, sat} from "@cl/collision2";
+import {aabb2_intersect_aabb, aabb2_intersect_aabb2, aabb2_intersect_aabb_mtv, line_intersect_aabb, line_intersect_capsule, line_intersect_circle, line_intersect_convex_cent, line_intersect_line, line_intersect_obb, point_closest_aabb, point_closest_capsule, point_closest_circle, point_closest_convex_cent, point_closest_line, point_closest_obb, point_inside_aabb, point_inside_capsule, point_inside_circle, point_inside_convex_cent, point_inside_obb, sat} from "@cl/collision2";
 import {vec3} from "@cl/vec3.ts";
 import {create_canvas} from "@engine/canvas.ts";
 
@@ -299,7 +299,8 @@ const start = vec2(-200.0, -200.0), end = vec2(100.0, -400.0);
 const colliders: collider_t[] = [];
 colliders.push(new circle_t(vec2(400.0, -50), 50.0));
 colliders.push(new aabb_t(vec2(200.0, 10.0), vec2(120.0)));
-colliders.push(new obb_t(vec2(-200.0, 10.0), vec2(80.0, 160.0), 90.0));
+colliders.push(new aabb_t(vec2(-200.0, 10.0), vec2(120.0)));
+colliders.push(new obb_t(vec2(-200.0, -140.0), vec2(80.0, 160.0), 90.0));
 colliders.push(new capsule_t(vec2(-200.0, 200.0), vec2(200.0, 400.0), 30.0));
 colliders.push(new polygon_t([vec2(-100.0, -86.6), vec2(100.0, -86.6), vec2(0.0, 86.6)], vec2(200.0, -200.0), 0.0));
 colliders.push(new polygon_t([vec2(100.0, 0.0), vec2(50.0, 86.6), vec2(-50.0, 86.6), vec2(-100.0, 0.0), vec2(-50.0, -86.6), vec2(50.0, -86.6)], vec2(-500.0, -200.0), 0.0));
@@ -421,11 +422,20 @@ function render(): void {
                 collider.render(vec3(255, 209, 209));
 
                 d2_fill(255.0, 0.0, 0.0);
-                d2_line_arrow2(vec2(), vec2_muls1(result.mtv, 40.0), 4.0);
+                d2_line_arrow2(collider.position, vec2_addmuls1(collider.position, result.mtv, result.overlap), 4.0);
             } else {
                 collider.render(vec3(209, 209, 209));
             }
-        } 
+        }
+
+        if (selected && selected instanceof aabb_t && selected !== collider && collider instanceof aabb_t) {
+            const result = aabb2_intersect_aabb_mtv(selected.position, selected.size, collider.position, collider.size);
+
+            if (result) {
+                d2_fill(255.0, 0.0, 0.0);
+                d2_line_arrow2(collider.position, vec2_addmuls1(collider.position, result.dir, result.depth), 4.0);
+            }
+        }
     }
 
     line.render(vec3(89, 111, 255))
