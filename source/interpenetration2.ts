@@ -3,7 +3,7 @@ import {body_box, body_circle, body_polygon, body_t, BODY_TYPE, broad_phase_naiv
 import {vec2, vec2_abs, vec2_add1, vec2_copy, vec2_set, vec2_sub1} from "@cl/vec2.ts";
 import {io_init, io_kb_key_down, io_key_down, io_m_button_down, io_m_button_up, io_m_move, kb_event_t, m_event_t} from "@engine/io.ts";
 import {create_canvas} from "@engine/canvas.ts";
-import { point_inside_obb } from "@cl/collision2";
+import {point_inside_obb} from "@cl/collision2.ts";
 
 const canvas_el = create_canvas(document.body);
 d2_init(canvas_el);
@@ -67,10 +67,6 @@ io_m_button_up(function(event: m_event_t): void {
 });
 
 function resolve() {
-    for (const body of bodies) {
-        body.update(vec2(0.0, -10.0), 0.01);
-    }
-
     const pairs = broad_phase_naive(bodies);
     narrow_phase(pairs);
 }
@@ -82,10 +78,6 @@ io_kb_key_down(function(event: kb_event_t): void {
 });
 
 function update(): void {
-    // for (const body of bodies) {
-    //     body.rotation += 0.01;
-    // }
-
     if (io_key_down("KeyR")) {
         resolve();
     }
