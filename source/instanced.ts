@@ -1,4 +1,4 @@
-import {cam3_compute_proj, cam3_compute_view, cam3_move_forward, cam3_move_right, cam3_new, cam3_pan, cam3_tilt, cam3_update} from "@cl/cam3";
+import {cam3_compute_proj, cam3_compute_view, cam3_move_forward, cam3_move_right, cam3_new, cam3_pan, cam3_tilt, cam3_fru} from "@cl/cam3";
 import {mat4_ident} from "@cl/mat4";
 import {vec3} from "@cl/vec3";
 import {gl_init, gl_link_program} from "@engine/gl.ts";
@@ -194,7 +194,7 @@ function update(): void {
         }
     }
 
-    cam3_update(camera);
+    cam3_fru(camera);
     cam3_compute_proj(camera, canvas_el.width, canvas_el.height);
     cam3_compute_view(camera);
 }
