@@ -135,7 +135,7 @@ for (let i = 0; i < y; i++) {
     for (let j = 0; j < x; j++) {
         const mat = matrices[k];
         mat4_ident(mat);
-        mat4_translate(mat, vec3(i * 6.0, 0.0, j * 6.0));
+        mat4_translate(mat, vec3(i * 6.0, 0.0, j * 6.0), mat);
         k++;
     }
 }
@@ -201,9 +201,9 @@ function update(): void {
 
 setInterval(() => {
     for (const matrix of matrices) {
-        mat4_rotate_x(matrix, Math.random() / 50.0);
-        mat4_rotate_y(matrix, Math.random() / 50.0);
-        mat4_rotate_z(matrix, Math.random() / 50.0);
+        mat4_rotate_x(matrix, Math.random() / 50.0, matrix);
+        mat4_rotate_y(matrix, Math.random() / 50.0, matrix);
+        mat4_rotate_z(matrix, Math.random() / 50.0, matrix);
     }
 }, 1000 / 30.0);
 
