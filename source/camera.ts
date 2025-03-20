@@ -39,7 +39,7 @@ const program = gl_link_program({
             o_frag_color = vec4(edge_color, edge_factor);
         }
     `
-}) as WebGLProgram;
+})!;
 
 const u_projection = gl.getUniformLocation(program, "u_projection");
 const u_view = gl.getUniformLocation(program, "u_view");
@@ -121,8 +121,8 @@ io_init();
 
 io_m_move(function(event: m_event_t): void {
     if (document.pointerLockElement === canvas_el) {
-        cam3_pan(camera, event.xd, 1.0);
-        cam3_tilt(camera, event.yd, 1.0);
+        cam3_pan(camera, event.xd);
+        cam3_tilt(camera, event.yd);
     }
 });
 
@@ -139,19 +139,19 @@ io_kb_key_down(function(event: kb_event_t): void {
 function update(): void {
     if (document.pointerLockElement === canvas_el) {
         if (io_key_down("KeyA")) {
-            cam3_move_right(camera, -1.0, 1.0);
+            cam3_move_right(camera, -1.0);
         }
 
         if (io_key_down("KeyD")) {
-            cam3_move_right(camera, 1.0, 1.0);
+            cam3_move_right(camera, 1.0);
         }
 
         if (io_key_down("KeyS")) {
-            cam3_move_forward(camera, -1.0, 1.0);
+            cam3_move_forward(camera, -1.0);
         }
 
         if (io_key_down("KeyW")) {
-            cam3_move_forward(camera, 1.0, 1.0);
+            cam3_move_forward(camera, 1.0);
         }
     }
 
