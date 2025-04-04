@@ -2,7 +2,7 @@ import {vec2_t, vec3_t} from "@cl/type.ts";
 import {vec2, vec2_add1, vec2_addmuls1, vec2_copy, vec2_dist, vec2_set, vec2_sub1} from "@cl/vec2.ts";
 import {d2_aabb2, d2_center_transform, d2_circle2, d2_clear_color, d2_fill_vec, d2_init, d2_line2, d2_line_radius2, d2_obb2, d2_polygon_cent2, d2_reset_transform, d2_stroke, d2_stroke_vec} from "@engine/d2.ts";
 import {io_init, io_kb_key_down, io_m_button_down, io_m_button_up, io_m_move, kb_event_t, m_event_t} from "@engine/io.ts";
-import {mtv_aabb2_aabb2, line_intersect_aabb, line_intersect_capsule, line_intersect_circle, line_intersect_convex2, line_intersect_line, line_intersect_obb, closest_point_aabb, closest_point_capsule, closest_point_circle, closest_point_convex2, closest_point_line, closest_point_obb, point_inside_aabb, point_inside_capsule, point_inside_circle, point_inside_convex2, point_inside_obb, mtv_sat, compute_axes} from "@cl/collision2";
+import {mtv_aabb_aabb2, line_intersect_aabb, line_intersect_capsule, line_intersect_circle, line_intersect_convex2, line_intersect_line, line_intersect_obb, closest_point_aabb, closest_point_capsule, closest_point_circle, closest_point_convex2, closest_point_line, closest_point_obb, point_inside_aabb, point_inside_capsule, point_inside_circle, point_inside_convex2, point_inside_obb, mtv_sat, compute_axes} from "@cl/collision2";
 import {vec3} from "@cl/vec3.ts";
 import {create_canvas} from "@engine/canvas.ts";
 
@@ -432,7 +432,7 @@ function render(): void {
         }
 
         if (selected && selected instanceof aabb_t && selected !== collider && collider instanceof aabb_t) {
-            const result = mtv_aabb2_aabb2(selected.position, selected.size, collider.position, collider.size);
+            const result = mtv_aabb_aabb2(selected.position, selected.size, collider.position, collider.size);
 
             if (result) {
                 d2_stroke(255, 0, 0, 2.0);
