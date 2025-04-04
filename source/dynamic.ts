@@ -19,14 +19,14 @@ const program = gl_link_program({
         uniform mat4 u_projection;
         uniform mat4 u_view;
 
-        const vec2 positions[4] = vec2[4](
+        const vec2 positions[4] = vec2[](
             vec2(-0.5, 0.5),
             vec2(-0.5, -0.5),
             vec2(0.5, 0.5),
             vec2(0.5, -0.5)
         );
 
-        const vec2 tex_coords[4] = vec2[4](
+        const vec2 tex_coords[4] = vec2[](
             vec2(0.0, 0.0),
             vec2(0.0, 1.0),
             vec2(1.0, 0.0),

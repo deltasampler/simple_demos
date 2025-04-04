@@ -9,14 +9,14 @@ const gl = gl_init(canvas_el);
 const VERTEX_SHADER = `#version 300 es
     out vec2 v_tex_coord;
 
-    const vec2 positions[4] = vec2[4](
+    const vec2 positions[4] = vec2[](
         vec2(-1.0, -1.0),
         vec2(-1.0, 1.0),
         vec2(1.0, -1.0),
         vec2(1.0, 1.0)
     );
 
-    const vec2 tex_coords[4] = vec2[4](
+    const vec2 tex_coords[4] = vec2[](
         vec2(0.0, 0.0),
         vec2(0.0, 1.0),
         vec2(1.0, 0.0),
