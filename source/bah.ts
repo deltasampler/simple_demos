@@ -7,7 +7,7 @@ import {vec4} from "@cl/vec4.ts";
 import {vec2, vec2_add1, vec2_add2, vec2_copy, vec2_muls1, vec2_set, vec2_sub1} from "@cl/vec2.ts";
 import {rand_in} from "@cl/math.ts";
 import {vec2_t} from "@cl/type.ts";
-import {mtv_aabb_aabb2, point_inside_aabb} from "@cl/collision2.ts";
+import {mtv_aabb_aabb2, overlap_aabb_aabb2, overlap_aabb_aabb_min_max2, point_inside_aabb} from "@cl/collision2.ts";
 
 const canvas_el = create_canvas(document.body);
 const gl = gl_init(canvas_el);
@@ -35,6 +35,7 @@ const drag_pos = vec2();
 let drag_box: box_t|null = null;
 let use_sap = true;
 let collision_checks = 0;
+const WORLD_SIZE = 1024;
 
 class box_t {
     position: vec2_t;
@@ -69,6 +70,120 @@ function box_up(box: box_t): number {
     return box.position[1] + box.size[1] / 2.0;
 }
 
+function expand_bits(v: number): number {
+    v = (v * 0x00010001) & 0xFF0000FF;
+    v = (v * 0x00000101) & 0x0F00F00F;
+    v = (v * 0x00000011) & 0xC30C30C3;
+    v = (v * 0x00000005) & 0x49249249;
+
+    return v;
+}
+
+
+function normalize_cworld_oord(val: number): number {
+    return (val + WORLD_SIZE / 2) / WORLD_SIZE;
+};
+
+function calc_morton_code(x: number, y: number): number {
+    x = normalize_cworld_oord(x);
+    y = normalize_cworld_oord(y);
+    
+    x = Math.min(Math.max(x, 0.0), 1.0);
+    y = Math.min(Math.max(y, 0.0), 1.0);
+    
+    x = Math.min(Math.floor(x * 1023), 1023);
+    y = Math.min(Math.floor(y * 1023), 1023);
+    
+    const xx = expand_bits(x);
+    const yy = expand_bits(y);
+
+    return xx | (yy << 1);
+}
+
+
+
+
+
+class bah_node_t {
+    min: vec2_t;
+    max: vec2_t;
+    left: bah_node_t|null;
+    right: bah_node_t|null;
+    id: number;
+}
+
+function bah_node_new():bah_node_t {
+    const node = new bah_node_t();
+
+    return node;
+}
+
+function bah_node_is_leaf(node: bah_node_t) {
+    return node.id > -1;
+}
+
+function get_split_pos(start: number, end: number): number {
+    return Math.floor((start + end) / 2.0);
+}
+
+function create_leaf(box: box_t, id: number) {
+    const node = new bah_node_t();
+    node.min = vec2(box_left(box), box_down(box));
+    node.max = vec2(box_right(box), box_up(box));
+    node.left = null;
+    node.right = null;
+    node.id = id;
+
+    return node;
+}
+
+type morton_type = {
+    box_id: number;
+    morton: number;
+};
+
+function create_sub_tree(list: morton_type[], start: number, end: number, boxes: box_t[]): bah_node_t {
+    if (start === end) {
+        const box_id = list[start].box_id;
+
+        return create_leaf(boxes[box_id], box_id);
+    }
+
+    const m = get_split_pos(start, end);
+    const node = new bah_node_t();
+    node.left = create_sub_tree(list, start, m, boxes);
+    node.right = create_sub_tree(list, m + 1, end, boxes);
+    node.min = vec2();
+    node.max = vec2();
+    node.min[0] = Math.min(node.left.min[0], node.right.min[0]);
+    node.min[1] = Math.min(node.left.min[1], node.right.min[1]);
+    node.max[0] = Math.max(node.left.max[0], node.right.max[0]);
+    node.max[1] = Math.max(node.left.max[1], node.right.max[1]);
+    node.id = -1;
+
+    return node;
+}
+
+function create_tree(boxes: box_t[]): bah_node_t {
+    const list: morton_type[] = [];
+
+    for (let i = 0; i < boxes.length; i += 1) {
+        const box = boxes[i];
+        const center = box.position;
+        const morton = calc_morton_code(center[0], center[1]);
+        list.push({
+            box_id: i,
+            morton
+        });
+    }
+
+    list.sort((a, b) => a.morton - b.morton);
+
+    return create_sub_tree(list, 0, list.length - 1, boxes);
+}
+
+
+
 function solve_collision(box0: box_t, box1: box_t): void {
     const mtv = mtv_aabb_aabb2(box0.position, box0.size, box1.position, box1.size);
 
@@ -81,6 +196,32 @@ function solve_collision(box0: box_t, box1: box_t): void {
             vec2_add2(box0.position, vec2_muls1(mtv.dir, mtv.depth / 2.0));
             vec2_add2(box1.position, vec2_muls1(mtv.dir, -mtv.depth / 2.0));
         }
+    }
+}
+
+function find_collisions(box_id: number, box: box_t, node: bah_node_t, boxes: box_t[]): void {
+    if (!overlap_aabb_aabb_min_max2(vec2(box_left(box), box_down(box)), vec2(box_right(box), box_up(box)), node.min, node.max)) {
+        return;
+    }
+
+    if (bah_node_is_leaf(node)) {
+        if (node.id !== box_id) {
+            solve_collision(box, boxes[node.id]);
+            collision_checks += 1;
+        }
+
+        return;
+    }
+
+    find_collisions(box_id, box, node.left, boxes);
+    find_collisions(box_id, box, node.right, boxes);
+}
+
+function bah(root: bah_node_t, boxes: box_t[]): void {
+    collision_checks = 0;
+
+    for (let i = 0; i < boxes.length; i += 1) {
+        find_collisions(i, boxes[i], root, boxes);
     }
 }
 
@@ -132,13 +273,13 @@ function randomize_boxes(boxes: box_t[]) {
         vec2_set(box.size, rand_in(2, 4), rand_in(2, 4));
     }
 
-    const b0 = boxes[0];
-    vec2_set(b0.size, 32, 128);
-    b0.is_static = true;
+    // const b0 = boxes[0];
+    // vec2_set(b0.size, 32, 128);
+    // b0.is_static = true;
 
-    const b1 = boxes[1];
-    vec2_set(b1.size, 128, 32);
-    b1.is_static = true;
+    // const b1 = boxes[1];
+    // vec2_set(b1.size, 128, 32);
+    // b1.is_static = true;
 }
 
 io_init();
@@ -196,6 +337,7 @@ io_kb_key_down(function(event: kb_event_t): void {
     }
 });
 
+
 function update() {
     if (io_key_down("KeyA")) {
         cam2_move_right(camera, -1.0);
@@ -224,11 +366,8 @@ function update() {
     cam2_compute_proj(camera, canvas_el.width, canvas_el.height);
     cam2_compute_view(camera);
 
-    if (use_sap) {
-        sap(boxes);
-    } else {
-        brute_force(boxes);
-    }
+    const root = create_tree(boxes);
+    bah(root, boxes);
 }
 
 function render(): void {
