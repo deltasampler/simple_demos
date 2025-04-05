@@ -7,7 +7,7 @@ import {vec4} from "@cl/vec4.ts";
 import {vec2, vec2_add1, vec2_add2, vec2_copy, vec2_muls1, vec2_set, vec2_sub1} from "@cl/vec2.ts";
 import {rand_in} from "@cl/math.ts";
 import {vec2_t} from "@cl/type.ts";
-import {mtv_aabb_aabb2, overlap_aabb_aabb2, overlap_aabb_aabb_min_max2, point_inside_aabb} from "@cl/collision2.ts";
+import {mtv_aabb_aabb2, overlap_aabb_aabb_min_max2, point_inside_aabb} from "@cl/collision2.ts";
 
 const canvas_el = create_canvas(document.body);
 const gl = gl_init(canvas_el);
@@ -33,7 +33,7 @@ const mouse_pos = vec2();
 let drag_flag = false;
 const drag_pos = vec2();
 let drag_box: box_t|null = null;
-let use_sap = true;
+let use_bah = true;
 let collision_checks = 0;
 const WORLD_SIZE = 1024;
 
@@ -100,22 +100,12 @@ function calc_morton_code(x: number, y: number): number {
     return xx | (yy << 1);
 }
 
-
-
-
-
 class bah_node_t {
     min: vec2_t;
     max: vec2_t;
     left: bah_node_t|null;
     right: bah_node_t|null;
     id: number;
-}
-
-function bah_node_new():bah_node_t {
-    const node = new bah_node_t();
-
-    return node;
 }
 
 function bah_node_is_leaf(node: bah_node_t) {
@@ -182,8 +172,6 @@ function create_tree(boxes: box_t[]): bah_node_t {
     return create_sub_tree(list, 0, list.length - 1, boxes);
 }
 
-
-
 function solve_collision(box0: box_t, box1: box_t): void {
     const mtv = mtv_aabb_aabb2(box0.position, box0.size, box1.position, box1.size);
 
@@ -236,28 +224,6 @@ function brute_force(boxes: box_t[]): void {
     }
 }
 
-function sap(boxes: box_t[]): void {
-    const sorted_boxes = boxes.sort((a, b) => box_left(a) - box_left(b));
-    collision_checks = 0;
-
-    for (let i = 0; i < sorted_boxes.length; i += 1) {
-        const box0 = sorted_boxes[i];
-
-        for (let j = i + 1; j < sorted_boxes.length; j += 1) {
-            const box1 = sorted_boxes[j];
-
-            if (box_left(box1) > box_right(box0)) {
-                break;
-            }
-
-            if (box_down(box0) < box_up(box1) && box_up(box0) > box_down(box1)) {
-                solve_collision(box0, box1);
-                collision_checks += 1;
-            }
-        }
-    }
-}
-
 const box_count = 4096;
 const boxes: box_t[] = [];
 
@@ -269,17 +235,17 @@ randomize_boxes(boxes);
 
 function randomize_boxes(boxes: box_t[]) {
     for (const box of boxes) {
-        vec2_set(box.position, rand_in(-64, 64), rand_in(-64, 64));
+        vec2_set(box.position, rand_in(-512, 512), rand_in(-512, 512));
         vec2_set(box.size, rand_in(2, 4), rand_in(2, 4));
     }
 
-    // const b0 = boxes[0];
-    // vec2_set(b0.size, 32, 128);
-    // b0.is_static = true;
+    const b0 = boxes[0];
+    vec2_set(b0.size, 32, 128);
+    b0.is_static = true;
 
-    // const b1 = boxes[1];
-    // vec2_set(b1.size, 128, 32);
-    // b1.is_static = true;
+    const b1 = boxes[1];
+    vec2_set(b1.size, 128, 32);
+    b1.is_static = true;
 }
 
 io_init();
@@ -329,14 +295,13 @@ io_kb_key_down(function(event: kb_event_t): void {
     }
 
     if (event.code === "Digit1") {
-        use_sap = true;
+        use_bah = true;
     }
 
     if (event.code === "Digit2") {
-        use_sap = false;
+        use_bah = false;
     }
 });
-
 
 function update() {
     if (io_key_down("KeyA")) {
@@ -366,8 +331,12 @@ function update() {
     cam2_compute_proj(camera, canvas_el.width, canvas_el.height);
     cam2_compute_view(camera);
 
-    const root = create_tree(boxes);
-    bah(root, boxes);
+    if (use_bah) {
+        const root = create_tree(boxes);
+        bah(root, boxes);
+    } else {
+        brute_force(boxes);
+    }
 }
 
 function render(): void {
@@ -377,7 +346,7 @@ function render(): void {
 
     for (let i = 0; i < box_count; i += 1) {
         const box = boxes[i];
-    
+
         obb_rdata_instance(obb_rdata, i, box.position, box.size, 0, 0, vec4(170, 170, 170, 255), vec4(255, 0, 255, 255), 0.1);
     }
 
@@ -385,7 +354,7 @@ function render(): void {
 
     let stats = "";
     stats += `Box count: ${box_count}<br>`;
-    stats += `Method: ${ use_sap ? "Sweep And Prune" : "Brute Force" }<br>`;
+    stats += `Method: ${ use_bah ? "Bounding Area Hierarchy" : "Brute Force" }<br>`;
     stats += `Collision Checks Per Frame: ${ collision_checks }`;
     stats_el.innerHTML = stats;
 }
