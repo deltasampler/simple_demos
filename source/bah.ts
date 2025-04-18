@@ -1,13 +1,12 @@
 import {gl_init} from "@engine/gl.ts";
-import {cam2_compute_proj, cam2_compute_view, cam2_move_right, cam2_move_up, cam2_new, cam2_proj_mouse, cam2_zoom} from "@cl/cam2.ts";
+import {cam2_compute_proj, cam2_compute_view, cam2_move_right, cam2_move_up, cam2_new, cam2_proj_mouse, cam2_zoom} from "@cl/camera/cam2.ts";
 import {io_init, io_kb_key_down, io_key_down, io_m_button_down, io_m_button_up, io_m_move, kb_event_t, m_event_t} from "@engine/io.ts";
 import {create_canvas} from "@engine/canvas.ts";
 import {obb_rdata_build, obb_rdata_instance, obb_rdata_new, obb_rend_build, obb_rend_init, obb_rend_render} from "@engine/obb_rend.ts";
-import {vec4} from "@cl/vec4.ts";
-import {vec2, vec2_add1, vec2_add2, vec2_copy, vec2_muls1, vec2_set, vec2_sub1} from "@cl/vec2.ts";
-import {rand_in} from "@cl/math.ts";
-import {vec2_t} from "@cl/type.ts";
-import {mtv_aabb_aabb2, overlap_aabb_aabb_min_max2, point_inside_aabb} from "@cl/collision2.ts";
+import {vec4} from "@cl/math/vec4.ts";
+import {vec2, vec2_add1, vec2_add2, vec2_copy, vec2_muls1, vec2_set, vec2_sub1, vec2_t} from "@cl/math/vec2.ts";
+import {rand_in} from "@cl/math/math.ts";
+import {mtv_aabb_aabb2, overlap_aabb_aabb_min_max2, point_inside_aabb} from "@cl/collision/collision2.ts";
 
 const canvas_el = create_canvas(document.body);
 const gl = gl_init(canvas_el);

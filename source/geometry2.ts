@@ -1,8 +1,8 @@
 import {gl_init, gl_link_program} from "@engine/gl.ts";
-import {cam2_compute_proj, cam2_compute_view, cam2_move_right, cam2_move_up, cam2_new} from "@cl/cam2.ts";
+import {cam2_compute_proj, cam2_compute_view, cam2_move_right, cam2_move_up, cam2_new} from "@cl/camera/cam2.ts";
 import {io_init, io_key_down} from "@engine/io.ts";
-import {vec2} from "@cl/vec2";
-import {vec4} from "@cl/vec4.ts";
+import {vec2} from "@cl/math/vec2";
+import {vec4} from "@cl/math/vec4.ts";
 import {create_canvas} from "@engine/canvas.ts";
 import {gen_circle, gen_line, gen_star, poly_data_t} from "@cl/triangulation2.ts";
 

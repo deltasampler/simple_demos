@@ -1,10 +1,9 @@
-import {cam3_compute_proj, cam3_compute_view, cam3_move_forward, cam3_move_right, cam3_new, cam3_pan, cam3_tilt, cam3_fru} from "@cl/cam3";
-import {mat4_ident} from "@cl/mat4";
-import {vec3} from "@cl/vec3";
+import {cam3_compute_proj, cam3_compute_view, cam3_move_forward, cam3_move_right, cam3_new, cam3_pan, cam3_tilt, cam3_fru} from "@cl/camera/cam3.ts";
+import {mat4_ident, mat4_t} from "@cl/math/mat4.ts";
+import {vec3} from "@cl/math/vec3.ts";
 import {gl_init, gl_link_program} from "@engine/gl.ts";
 import {io_init, io_kb_key_down, io_key_down, io_m_move, kb_event_t, m_event_t} from "@engine/io.ts";
-import {mat4_rotate_x, mat4_rotate_y, mat4_rotate_z, mat4_translate} from "@cl/mat4_affine.ts";
-import { mat4_t, TYPE } from "@cl/type";
+import {mat4_rotate_x, mat4_rotate_y, mat4_rotate_z, mat4_translate} from "@cl/math/mat4_affine.ts";
 import {create_canvas} from "@engine/canvas.ts";
 
 const canvas_el = create_canvas(document.body);
@@ -122,7 +121,7 @@ const matrix_data = new Float32Array(num_instances * 16);
 const matrices: mat4_t[] = [];
 
 for (let i = 0; i < num_instances; ++i) {
-    matrices.push(new TYPE(
+    matrices.push(new Float32Array(
         matrix_data.buffer,
         i * 16 * 4,
         16

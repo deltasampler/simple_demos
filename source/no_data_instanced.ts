@@ -1,7 +1,6 @@
 import {gl_init, gl_link_program} from "@engine/gl.ts";
-import {cam2_compute_proj, cam2_compute_view, cam2_move_right, cam2_move_up, cam2_new} from "@cl/cam2.ts";
-import {TYPE, vec2_t} from "@cl/type";
-import {vec2_set} from "@cl/vec2";
+import {cam2_compute_proj, cam2_compute_view, cam2_move_right, cam2_move_up, cam2_new} from "@cl/camera/cam2.ts";
+import {vec2_set, vec2_t} from "@cl/math/vec2.ts";
 import {io_init, io_key_down} from "@engine/io.ts";
 import {create_canvas} from "@engine/canvas.ts";
 
@@ -48,7 +47,7 @@ const position_data = new Float32Array(num_instances * 2);
 const positions: vec2_t[] = [];
 
 for (let i = 0; i < num_instances; ++i) {
-    positions.push(new TYPE(
+    positions.push(new Float32Array(
         position_data.buffer,
         i * 2 * 4,
         2

@@ -1,7 +1,6 @@
 import {gl_init, gl_link_program} from "@engine/gl.ts";
-import {cam2_compute_proj, cam2_compute_view, cam2_move_right, cam2_move_up, cam2_new} from "@cl/cam2.ts";
+import {cam2_compute_proj, cam2_compute_view, cam2_move_right, cam2_move_up, cam2_new} from "@cl/camera/cam2.ts";
 import {io_init, io_key_down} from "@engine/io.ts";
-import { TYPE } from "@cl/type";
 import {create_canvas} from "@engine/canvas.ts";
 
 const canvas_el = create_canvas(document.body);
@@ -86,7 +85,7 @@ function random(min: number, max: number): number {
 }
 
 for (let i = 0; i < instance_count; ++i) {
-    instances.push(new TYPE(
+    instances.push(new Float32Array(
         instance_data.buffer,
         i * 9 * 4,
         9
