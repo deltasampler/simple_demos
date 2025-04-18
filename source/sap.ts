@@ -4,7 +4,7 @@ import {io_init, io_kb_key_down, io_key_down, io_m_button_down, io_m_button_up, 
 import {create_canvas} from "@engine/canvas.ts";
 import {obb_rdata_build, obb_rdata_instance, obb_rdata_new, obb_rend_build, obb_rend_init, obb_rend_render} from "@engine/obb_rend.ts";
 import {vec4} from "@cl/math/vec4.ts";
-import {vec2, vec2_add1, vec2_add2, vec2_copy, vec2_muls1, vec2_set, vec2_sub1} from "@cl/math/vec2.ts";
+import {vec2, vec2_add1, vec2_add2, vec2_copy, vec2_muls1, vec2_set, vec2_sub1, vec2_t} from "@cl/math/vec2.ts";
 import {rand_in} from "@cl/math/math.ts";
 import {mtv_aabb_aabb2, point_inside_aabb} from "@cl/collision/collision2.ts";
 
