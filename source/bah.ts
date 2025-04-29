@@ -4,8 +4,8 @@ import {io_init, io_kb_key_down, io_key_down, io_m_button_down, io_m_button_up, 
 import {create_canvas} from "@engine/canvas.ts";
 import {obb_rdata_build, obb_rdata_instance, obb_rdata_new, obb_rend_build, obb_rend_init, obb_rend_render} from "@engine/obb_rend.ts";
 import {vec4} from "@cl/math/vec4.ts";
-import {vec2, vec2_add1, vec2_add2, vec2_copy, vec2_muls1, vec2_set, vec2_sub1, vec2_t} from "@cl/math/vec2.ts";
-import {rand_in} from "@cl/math/math.ts";
+import {vec2, vec2n_add, vec2_copy, vec2n_muls, vec2_set, vec2n_sub, vec2_t, vec2m_add} from "@cl/math/vec2.ts";
+import {rand_in} from "@cl/math/rand.ts";
 import {mtv_aabb_aabb2, overlap_aabb_aabb_min_max2, point_inside_aabb} from "@cl/collision/collision2.ts";
 
 const canvas_el = create_canvas(document.body);
@@ -176,12 +176,12 @@ function solve_collision(box0: box_t, box1: box_t): void {
 
     if (mtv) {
         if (box0.is_static && !box1.is_static) {
-            vec2_add2(box1.position, vec2_muls1(mtv.dir, -mtv.depth));
+            vec2m_add(box1.position, vec2n_muls(mtv.dir, -mtv.depth));
         } else if (!box0.is_static && box1.is_static) {
-            vec2_add2(box0.position, vec2_muls1(mtv.dir, mtv.depth));
+            vec2m_add(box0.position, vec2n_muls(mtv.dir, mtv.depth));
         } else {
-            vec2_add2(box0.position, vec2_muls1(mtv.dir, mtv.depth / 2.0));
-            vec2_add2(box1.position, vec2_muls1(mtv.dir, -mtv.depth / 2.0));
+            vec2m_add(box0.position, vec2n_muls(mtv.dir, mtv.depth / 2.0));
+            vec2m_add(box1.position, vec2n_muls(mtv.dir, -mtv.depth / 2.0));
         }
     }
 }
@@ -260,7 +260,7 @@ io_m_move(function(event: m_event_t): void {
     const point = cam2_proj_mouse(camera, mouse_pos, canvas_el.width, canvas_el.height);
 
     if (drag_flag && drag_box) {
-        vec2_copy(drag_box.position, vec2_add1(drag_box.drag_pos, vec2_sub1(point, drag_pos)));
+        vec2_copy(drag_box.position, vec2n_add(drag_box.drag_pos, vec2n_sub(point, drag_pos)));
     }
 });
 

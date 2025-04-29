@@ -4,8 +4,8 @@ import {io_init, io_kb_key_down, io_key_down, io_m_button_down, io_m_button_up, 
 import {create_canvas} from "@engine/canvas.ts";
 import {circle_rdata_build, circle_rdata_instance, circle_rdata_new, circle_rend_build, circle_rend_init, circle_rend_render} from "@engine/circle_rend.ts";
 import {vec4} from "@cl/math/vec4.ts";
-import {vec2, vec2_add1, vec2_add2, vec2_addmuls2, vec2_copy, vec2_dir1, vec2_dist, vec2_muls1, vec2_set, vec2_sub1, vec2_t, vec2_zero} from "@cl/math/vec2.ts";
-import {rand_in} from "@cl/math/math.ts";
+import {vec2, vec2n_add, vec2_copy, vec2n_dir, vec2_dist, vec2n_muls, vec2_set, vec2n_sub, vec2_t, vec2_zero, vec2m_add, vec2m_addmuls} from "@cl/math/vec2.ts";
+import {rand_in} from "@cl/math/rand.ts";
 import {point_inside_circle} from "@cl/collision/collision2.ts";
 
 const canvas_el = create_canvas(document.body);
@@ -79,7 +79,7 @@ function ball_up(ball: ball_t): number {
 
 function solve_collision(ball0: ball_t, ball1: ball_t): void {
     const depth = vec2_dist(ball0.position, ball1.position) - (ball0.radius + ball1.radius);
-    const dir = vec2_dir1(ball1.position, ball0.position);
+    const dir = vec2n_dir(ball1.position, ball0.position);
 
     if (depth < 0.0) {
         const mtv = {
@@ -88,22 +88,22 @@ function solve_collision(ball0: ball_t, ball1: ball_t): void {
         }
 
         if (ball0.is_static && !ball1.is_static) {
-            vec2_add2(ball1.position, vec2_muls1(mtv.dir, -mtv.depth));
+            vec2m_add(ball1.position, vec2n_muls(mtv.dir, -mtv.depth));
         } else if (!ball0.is_static && ball1.is_static) {
-            vec2_add2(ball0.position, vec2_muls1(mtv.dir, mtv.depth));
+            vec2m_add(ball0.position, vec2n_muls(mtv.dir, mtv.depth));
         } else {
-            vec2_add2(ball0.position, vec2_muls1(mtv.dir, mtv.depth / 2.0));
-            vec2_add2(ball1.position, vec2_muls1(mtv.dir, -mtv.depth / 2.0));
+            vec2m_add(ball0.position, vec2n_muls(mtv.dir, mtv.depth / 2.0));
+            vec2m_add(ball1.position, vec2n_muls(mtv.dir, -mtv.depth / 2.0));
         }
     }
 }
 
 export function body_integrate(ball: ball_t, step: number): void {
-    vec2_addmuls2(ball.position, ball.velocity, step);
+    vec2m_addmuls(ball.position, ball.velocity, step);
 
-    vec2_copy(ball.acceleration, vec2_muls1(ball.force, 1.0 / ball.mass));
+    vec2_copy(ball.acceleration, vec2n_muls(ball.force, 1.0 / ball.mass));
 
-    vec2_addmuls2(ball.velocity, ball.acceleration, step);
+    vec2m_addmuls(ball.velocity, ball.acceleration, step);
 
     // vec2_muls2(ball.velocity, pow(ball.damping, step));
 
@@ -155,7 +155,7 @@ io_m_move(function(event: m_event_t): void {
     const point = cam2_proj_mouse(camera, mouse_pos, canvas_el.width, canvas_el.height);
 
     if (drag_flag && drag_ball) {
-        vec2_copy(drag_ball.position, vec2_add1(drag_ball.drag_pos, vec2_sub1(point, drag_pos)));
+        vec2_copy(drag_ball.position, vec2n_add(drag_ball.drag_pos, vec2n_sub(point, drag_pos)));
     }
 });
 
@@ -222,7 +222,7 @@ function update() {
     for (let i = 0; i < balls.length; i += 1) {
         const ball = balls[i];
 
-        vec2_add2(ball.force, vec2(0, -1.0));
+        vec2m_add(ball.force, vec2(0, -1.0));
     }
 
     sap(balls);

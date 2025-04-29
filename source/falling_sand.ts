@@ -1,7 +1,8 @@
 import {gl_init, gl_link_program} from "@engine/gl.ts";
 import {io_init, io_kb_key_down, io_m_button_down, io_m_button_up, io_m_move, io_m_wheel_scroll, kb_event_t, m_event_t, m_wheel_event_t} from "@engine/io.ts";
 import {vec2, vec2_set, vec2_t} from "@cl/math/vec2.ts";
-import {clamp, index2, rand_in} from "@cl/math/math.ts";
+import {clamp, index2} from "@cl/math/math.ts";
+import {rand_in} from "@cl/math/rand.ts";
 
 const root_el = document.createElement("div");
 document.body.append(root_el);

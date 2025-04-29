@@ -1,6 +1,6 @@
 import {d2_center_transform, d2_circle2, d2_clear_color, d2_init, d2_obb_minmax2, d2_polygon_cent2, d2_reset_transform, d2_stroke} from "@engine/d2.ts";
-import {body_box, body_circle, body_polygon, body_t, BODY_TYPE, broad_phase_naive, narrow_phase} from "@cl/phys2.ts";
-import {vec2, vec2_abs, vec2_add1, vec2_copy, vec2_set, vec2_sub1} from "@cl/math/vec2.ts";
+import {body_box, body_circle, body_polygon, body_t, BODY_TYPE, broad_phase_naive, narrow_phase} from "./phys2.ts";
+import {vec2, vec2n_add, vec2_copy, vec2_set, vec2n_sub, vec2n_abs} from "@cl/math/vec2.ts";
 import {io_init, io_kb_key_down, io_key_down, io_m_button_down, io_m_button_up, io_m_move, kb_event_t, m_event_t} from "@engine/io.ts";
 import {create_canvas} from "@engine/canvas.ts";
 import {point_inside_obb} from "@cl/collision/collision2.ts";
@@ -37,8 +37,8 @@ io_m_move(function(event: m_event_t): void {
     vec2_set(mouse, event.x - canvas_el.width / 2.0, -event.y + canvas_el.height / 2.0);
 
     if (selected) {
-        const offset = vec2_sub1(mouse, start_position);
-        vec2_copy(selected.position, vec2_add1(selected_pos, offset));
+        const offset = vec2n_sub(mouse, start_position);
+        vec2_copy(selected.position, vec2n_add(selected_pos, offset));
     }
 });
 
@@ -48,7 +48,8 @@ io_m_button_down(function(event: m_event_t): void {
     }
 
     for (const body of bodies) {
-        if (point_inside_obb(body.position, vec2_abs(vec2_sub1(body.max, body.min)), body.rotation, mouse)) {
+        console.log(vec2n_abs(vec2n_sub(body.max, body.min)))
+        if (point_inside_obb(body.position, vec2n_abs(vec2n_sub(body.max, body.min)), body.rotation, mouse)) {
             selected = body;
             vec2_copy(start_position, mouse);
             vec2_copy(selected_pos, body.position);

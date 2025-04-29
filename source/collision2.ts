@@ -1,4 +1,4 @@
-import {vec2, vec2_add1, vec2_addmuls1, vec2_copy, vec2_dist, vec2_set, vec2_sub1, vec2_t} from "@cl/math/vec2.ts";
+import {vec2, vec2n_add, vec2n_addmuls, vec2_copy, vec2_dist, vec2_set, vec2n_sub, vec2_t} from "@cl/math/vec2.ts";
 import {d2_aabb2, d2_center_transform, d2_circle2, d2_clear_color, d2_fill_vec, d2_init, d2_line2, d2_line_radius2, d2_obb2, d2_polygon_cent2, d2_reset_transform, d2_stroke, d2_stroke_vec} from "@engine/d2.ts";
 import {io_init, io_kb_key_down, io_m_button_down, io_m_button_up, io_m_move, kb_event_t, m_event_t} from "@engine/io.ts";
 import {mtv_aabb_aabb2, line_intersect_aabb, line_intersect_capsule, line_intersect_circle, line_intersect_convex2, line_intersect_line, line_intersect_obb, closest_point_aabb, closest_point_capsule, closest_point_circle, closest_point_convex2, closest_point_line, closest_point_obb, point_inside_aabb, point_inside_capsule, point_inside_circle, point_inside_convex2, point_inside_obb, mtv_sat, compute_axes} from "@cl/collision/collision2.ts";
@@ -329,8 +329,8 @@ io_m_move(function(event: m_event_t): void {
                 vec2_copy(selected.end, mouse);
             }
         } else {
-            const offset = vec2_sub1(mouse, start_position);
-            selected.translate(vec2_add1(selected_pos, offset));
+            const offset = vec2n_sub(mouse, start_position);
+            selected.translate(vec2n_add(selected_pos, offset));
         }
     }
 });
@@ -424,7 +424,7 @@ function render(): void {
                 collider.render(vec3(255, 209, 209));
 
                 d2_stroke(255, 0, 0, 2.0);
-                d2_line2(collider.position, vec2_addmuls1(collider.position, result.dir, result.depth));
+                d2_line2(collider.position, vec2n_addmuls(collider.position, result.dir, result.depth));
             } else {
                 collider.render(vec3(209, 209, 209));
             }
@@ -435,7 +435,7 @@ function render(): void {
 
             if (result) {
                 d2_stroke(255, 0, 0, 2.0);
-                d2_line2(collider.position, vec2_addmuls1(collider.position, result.dir, result.depth));
+                d2_line2(collider.position, vec2n_addmuls(collider.position, result.dir, result.depth));
             }
         }
 
@@ -444,7 +444,7 @@ function render(): void {
 
         //     if (result) {
         //         d2_stroke(255, 0, 0, 2.0);
-        //         d2_line2(collider.position, vec2_addmuls1(collider.position, result.dir, result.depth));
+        //         d2_line2(collider.position, vec2n_addmuls(collider.position, result.dir, result.depth));
         //     }
         // }
     }
