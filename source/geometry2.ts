@@ -4,7 +4,7 @@ import {io_init, io_key_down} from "@engine/io.ts";
 import {vec2} from "@cl/math/vec2";
 import {vec4} from "@cl/math/vec4.ts";
 import {create_canvas} from "@engine/canvas.ts";
-import {gen_circle, gen_line, gen_star, poly_data_t} from "@cl/triangulation2.ts";
+import {gen_circle, gen_line, gen_star, poly_data_t} from "@cl/geometry/triangulation2.ts";
 
 const canvas_el = create_canvas(document.body);
 const gl = gl_init(canvas_el);
